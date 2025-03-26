@@ -9,6 +9,7 @@ import com.ranull.dualwield.manager.DualWieldManager;
 import com.ranull.dualwield.manager.VersionManager;
 import com.ranull.dualwield.nms.NMS;
 import org.bstats.bukkit.Metrics;
+import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -17,9 +18,27 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
+import java.util.Map;
 
 public final class DualWield extends JavaPlugin {
     private static DualWield instance;
+    public static final Map<String, String> VERSION_TO_REVISION = new HashMap<String, String>() {
+        {
+            this.put("1.20", "1_20_R1");
+            this.put("1.20.1", "1_20_R1");
+            this.put("1.20.2", "1_20_R2");
+            this.put("1.20.3", "1_20_R3");
+            this.put("1.20.4", "1_20_R3");
+            this.put("1.20.5", "1_20_R4");
+            this.put("1.20.6", "1_20_R4");
+            this.put("1.21", "1_21_R1");
+            this.put("1.21.1", "1_21_R1");
+            this.put("1.21.2", "1_21_R2");
+            this.put("1.21.3", "1_21_R2");
+            this.put("1.21.4", "1_21_R3");
+        }
+    };
     private DualWieldManager dualWieldManager;
     private VersionManager versionManager;
     private NMS nms;
@@ -121,10 +140,20 @@ public final class DualWield extends JavaPlugin {
                 nms = (NMS) clazz.getDeclaredConstructor().newInstance();
             }
 
-            return nms != null;
+            if(nms != null) return true;
         } catch (ArrayIndexOutOfBoundsException | ClassNotFoundException | InstantiationException |
-                 IllegalAccessException | NoSuchMethodException | InvocationTargetException ignored) {
-            return false;
-        }
+                 IllegalAccessException | NoSuchMethodException | InvocationTargetException ignored) {}
+        try {
+            String version = getServer().getVersion().split("-")[0];
+            Class<?> clazz = Class.forName("com.ranull.dualwield.nms.NMS_v" + VERSION_TO_REVISION.get(version));
+
+            if (NMS.class.isAssignableFrom(clazz)) {
+                nms = (NMS) clazz.getDeclaredConstructor().newInstance();
+            }
+
+            if(nms != null) return true;
+        } catch (ArrayIndexOutOfBoundsException | ClassNotFoundException | InstantiationException |
+                 IllegalAccessException | NoSuchMethodException | InvocationTargetException ignored) {}
+        return false;
     }
 }

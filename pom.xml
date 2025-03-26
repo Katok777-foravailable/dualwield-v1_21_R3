@@ -45,6 +45,7 @@
         <module>v1_10_R1</module>
         <module>v1_9_R2</module>
         <module>v1_9_R1</module>
+        <module>v1_21_R3</module>
     </modules>
 
     <build>

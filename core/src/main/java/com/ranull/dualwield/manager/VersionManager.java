@@ -1,12 +1,23 @@
 package com.ranull.dualwield.manager;
 
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import static com.ranull.dualwield.DualWield.VERSION_TO_REVISION;
+
 public final class VersionManager {
-    private final String version;
+    private String version;
 
     public VersionManager(JavaPlugin plugin) {
-        this.version = plugin.getServer().getClass().getPackage().getName().split("\\.")[3];
+        try {
+            version = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
+            return;
+        } catch (ArrayIndexOutOfBoundsException ignored) {}
+
+        try {
+            version = "v" + VERSION_TO_REVISION.get(Bukkit.getServer().getVersion().split("-")[0]);
+            return;
+        } catch (ArrayIndexOutOfBoundsException ignored) {}
     }
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
